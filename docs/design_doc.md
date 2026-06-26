@@ -13,21 +13,21 @@ The **Retail & Apparel Demand Forecasting System** is designed to predict daily 
 ---
 
 ## 2. Architecture & Data Flow
-The system processes 5.8 million transactional records. The high-level data flow follows:
+The system is designed around a large retail transaction dataset. The high-level data flow follows:
 
 1. **Ingestion & Auditing**:
-   - Ingests raw data from 9 csv files (sales, stores, catalog, price history, discounts, markdowns, online channel).
+   - Ingests raw CSV files such as sales, stores, catalog, price history, and inventory records.
    - Validates data integrity (null rate checks, orphaned record filtering).
 2. **Memory Downcasting Layer**:
-   - Reduces numeric column sizes (e.g. `int64` to `int16`, `float64` to `float32`), reducing RAM usage by 60% (from ~18GB to ~7.2GB).
+   - Reduces numeric column sizes where safe (e.g. `int64` to `int16`, `float64` to `float32`) to lower RAM usage.
 3. **Data Integration**:
    - Merges anchor table (`sales.csv`) with catalog, store, pricing, and promotional tables on composite keys (`store_id`, `item_id`, `date`).
    - Imputes missing dates with zero sales to prevent lag calculation gaps.
 4. **Feature Engineering**:
-   - Generates 23 temporal, cyclical (sine/cosine monthly/weekly transitions), lag (7, 14, 28, 365 days), and rolling window features.
+   - Generates temporal, cyclical, lag, and rolling window features for demand forecasting.
 5. **Model Serving & UI**:
    - Exposes prediction endpoints via a Flask API.
-   - Serves an interactive glassmorphic dashboard to display aggregate forecasts (SARIMA), granular SKU forecasts (LightGBM), and safety stock recommendations.
+   - Serves a dashboard to display aggregate forecasts, granular SKU forecasts, and safety stock recommendations.
 
 ---
 
@@ -50,5 +50,5 @@ To ensure generalizability and prevent temporal data leakage:
 ---
 
 ## 5. Risks & Mitigation
-- **Cold Start**: Items with under 100 observations lack sufficient lags. *Mitigation:* Fall back to rolling store-category averages.
-- **Model Staleness**: Changes in price elasticity or seasonal habits. *Mitigation:* Weekly/monthly automated RMSE checking triggers a retrain.
+- **Cold Start**: New items may lack sufficient history for lag-based features. *Mitigation:* Fall back to store-category averages.
+- **Model Staleness**: Changes in price elasticity or seasonal habits can reduce forecast quality. *Mitigation:* Monitor validation error and retrain on a schedule.

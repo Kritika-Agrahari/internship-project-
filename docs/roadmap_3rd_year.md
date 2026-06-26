@@ -1,7 +1,7 @@
-# Retail & Apparel Demand Forecasting System — 3rd Year Extension Roadmap
+# Indian Apparel Demand Forecasting & Secure Analytics System — 3rd Year Extension Roadmap
 
 ## What this project is today (2-3 lines)
-Currently, this is a local Flask-based web application containing a pre-trained LightGBM champion model and a SARIMA benchmark model. It processes 5.8 million rows of retail sales and catalog data to predict granular SKU-level demand and outputs safety stock recommendations via 80% confidence intervals.
+Currently, this is a local retail forecasting project centered on apparel demand prediction, data validation, and documentation. The current scope emphasizes the data layer and the planned modeling stack rather than a fully deployed product.
 
 ---
 
