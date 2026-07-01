@@ -1,129 +1,152 @@
-# Retail & Apparel Demand Forecasting System
+# 📈 Retail & Apparel Demand Forecasting System
 
 [![Project Type](https://img.shields.io/badge/Type-AI%20%7C%20ML-blue)]
 [![Domain](https://img.shields.io/badge/Domain-Indian%20Retail-green)]
-[![Status](https://img.shields.io/badge/Status-Week%201%20Foundation-orange)]
+[![Status](https://img.shields.io/badge/Status-Modeling%20%26%20Evaluation-orange)]
 [![Academic Year](https://img.shields.io/badge/Year-2025--2026-purple)]
 
-An ML-focused retail forecasting project for Indian apparel stores, built around demand prediction, data validation, and inventory planning for mid-market brands.
+An ML-focused retail forecasting project for Indian apparel stores, built around demand prediction, data validation, and inventory planning for mid-market brands. 
 
-## Project Snapshot
+This repository contains the end-to-end Machine Learning pipeline for demand forecasting, including Exploratory Data Analysis (EDA), advanced feature engineering, target encoding, and hyperparameter-tuned modeling using LightGBM and XGBoost.
 
-| Field | Value |
-| --- | --- |
-| Problem code | I1 |
-| Segment | Applied Machine Learning / Retail Analytics |
-| Author | Kritika Agrahari |
-| Current stage | Week 1 foundation and documentation |
-| Core model direction | LightGBM with a SARIMA benchmark |
-| Main goal | Forecast daily demand so store owners can plan inventory more accurately |
+---
 
-## Problem Statement
-
-Indian apparel retailers deal with irregular festival spikes, regional brand preferences, and highly price-sensitive purchasing patterns. Those factors make inventory planning difficult when decisions are based only on past sales intuition.
-
-This project is intended to turn retail transaction data into a forecasting workflow that supports store-level planning, seasonal stock preparation, and better replenishment decisions. The repository currently contains the design documents and a data-layer validation script that demonstrates ingestion, schema checking, and memory optimization.
-
-## Architecture
-
-```mermaid
-flowchart TD
-	A[Raw retail CSV files] --> B[Validation and auditing]
-	B --> C[Memory optimization]
-	C --> D[Feature engineering]
-	D --> E[LightGBM forecast model]
-	D --> F[SARIMA benchmark]
-	E --> G[Forecast output]
-	F --> G
-	G --> H[Flask API / dashboard layer]
-```
-
-## Repository Contents
+## 🗂️ Project Structure & Contents
 
 | Path | Purpose |
-| --- | --- |
-| [check_data_layer.py](check_data_layer.py) | Validates sample CSV ingestion and applies memory downcasting checks |
-| [docs/design_doc.md](docs/design_doc.md) | Initial system design and technical rationale |
-| [docs/roadmap_3rd_year.md](docs/roadmap_3rd_year.md) | Personal extension roadmap for the 3rd year portfolio |
-| [docs/week_1_submission_issue.md](docs/week_1_submission_issue.md) | Week 1 GitHub Issue template and checklist |
-| [03_Deliverables_Specification.md](03_Deliverables_Specification.md) | Official internship deliverables and submission rules |
+| :--- | :--- |
+| **[demand-forecasting-with-advanced-feature-engineeri.ipynb](demand-forecasting-with-advanced-feature-engineeri.ipynb)** | Jupyter notebook containing EDA, Feature Engineering, Modeling, Hyperparameter Tuning, and Evaluation. |
+| **[check_data_layer.py](check_data_layer.py)** | Validates sample CSV ingestion and applies memory downcasting checks. |
+| **[requirements.txt](requirements.txt)** | Python package dependencies needed to run the project. |
+| **[docs/design_doc.md](docs/design_doc.md)** | System design doc and technical rationale for forecasting. |
+| **[docs/roadmap_3rd_year.md](docs/roadmap_3rd_year.md)** | Personal extension roadmap for the 3rd year portfolio. |
+| **[03_Deliverables_Specification.md](03_Deliverables_Specification.md)** | Official internship deliverables and submission rules. |
 
-## Tech Stack
+---
 
-| Layer | Technology | Why |
-| --- | --- | --- |
-| Data validation | Python, Pandas, NumPy | Simple, reliable ingestion and transformation for tabular CSV data |
-| Forecasting | LightGBM | Strong fit for tabular demand forecasting with fast training |
-| Benchmarking | SARIMA | Useful baseline for seasonal demand patterns |
-| Backend direction | Flask | Lightweight API layer for serving predictions |
-| Visualization direction | HTML, CSS, JavaScript, Plotly | Flexible dashboarding without heavy frontend overhead |
+## 📊 Dataset Overview
 
-## Data Sources
+The dataset contains **76,000 records** and **16 variables**:
 
-The design assumes the following retail inputs:
+| Feature Name | Type | Description |
+| :--- | :--- | :--- |
+| `Date` | Object / Date | Date of transaction |
+| `Store ID` | Object | Unique identifier for the store |
+| `Product ID` | Object | Unique identifier for the product |
+| `Category` | Object | Category of the product (e.g., Electronics, Apparel) |
+| `Region` | Object | Geographical region of the store (e.g., North, South) |
+| `Inventory Level` | Integer | Stock count at the store |
+| `Units Sold` | Integer | Units of the product sold |
+| `Units Ordered` | Integer | Units of the product ordered |
+| `Price` | Float | Unit price of the product |
+| `Discount` | Integer | Discount percentage applied |
+| `Weather Condition` | Object | Weather conditions (e.g., Snowy, Sunny, Rainy) |
+| `Promotion` | Integer / Binary | Indicator of active promotion (0 or 1) |
+| `Competitor Pricing`| Float | Competitor's unit price for the product |
+| `Seasonality` | Object | Season designation (e.g., Winter, Summer) |
+| `Epidemic` | Integer / Binary | Indicator of epidemic conditions (0 or 1) |
+| **`Demand`** *(Target)*| Integer | The actual demand to forecast |
 
-| Dataset | Description |
-| --- | --- |
-| `sales.csv` | Daily item-level sales transactions |
-| `stores.csv` | Store location and region data |
-| `catalog.csv` | Product and category metadata |
-| `price_history.csv` | Price, discount, and offer history |
-| `festival_calendar.csv` | Festival and seasonal demand markers |
-| `inventory.csv` | Stock and replenishment information |
+---
 
-## What I Learned This Week
+## 🛠️ Feature Engineering Pipeline
 
-- Downcasting numeric columns can significantly reduce memory pressure when working with large CSV files.
-- Chronological splits matter for time-series style problems because random splits can leak future information into training.
-- Joining multiple retail tables on composite keys needs careful handling of missing dates and incomplete records.
-- A simple validation script is useful for proving that the data layer works before the full application is built.
-- Clear project documentation is part of the deliverable, not just a nice-to-have.
+The model implements advanced feature extraction to capture consumer behavior, competitor pricing influence, and time-based characteristics:
 
-## Quickstart
+1. **Revenue & Supply Metrics**:
+   - `Total_Earnings`: Net earnings after applying discounts:
+     $$\text{Total Earnings} = \text{Units Sold} \times \text{Price} \times \left(1 - \frac{\text{Discount}}{100}\right)$$
+   - `Products_to_sell`: Outstanding customer demand remaining:
+     $$\text{Products to sell} = \text{Units Ordered} - \text{Units Sold}$$
+   - `Inventory_pressure`: Scaled inventory capacity indicator:
+     $$\text{Inventory Pressure} = \frac{\text{Inventory Level}}{\text{Inventory Level} + 1}$$
+
+2. **Competitor & Price Dynamics**:
+   - `Price_diff`: Numerical price difference: $\text{Price} - \text{Competitor Pricing}$
+   - `Price_ratio`: Price ratio: $\frac{\text{Price}}{\text{Competitor Pricing} + 10^{-6}}$
+   - `Price_gap_pct`: Percentage gap: $\frac{\text{Price} - \text{Competitor Pricing}}{\text{Competitor Pricing}}$
+
+3. **Promotion & Temporal Features**:
+   - `Discount_effect`: Interaction term capturing promotion amplification: $\text{Discount} \times \text{Promotion}$
+   - `Year`, `Month`, `Day`: Extracted from the `Date` timestamp.
+
+---
+
+## 🤖 Modeling & Training Workflow
+
+### 1. Data Preprocessing & Target Transformation
+- **Target Normalization**: Log-transformation ($\log(1+y)$) is applied to the target variable `Demand` to reduce skewness and stabilize variance. Predictions are converted back using the exponential function ($\exp(x)-1$) during evaluation.
+- **Preventing Data Leakage**: Columns containing post-hoc information (like `Units Sold`, `Units Ordered`, `Products_to_sell`, `Total_Earnings`) along with metadata (`Store ID`, `Date`, `Price`) are dropped during training to prevent leakage.
+- **Target Encoding**: High-cardinality categorical features (`Category`, `Region`, `Weather Condition`, `Seasonality`, `Product ID`) are mapped to target statistics using `TargetEncoder` with a smoothing factor of `0.3`.
+
+### 2. Model Selection & Hyperparameter Tuning
+We use 5-Fold Cross Validation (`KFold`) and `RandomizedSearchCV` to tune optimal hyperparameters for two gradient boosting algorithms:
+- **LightGBM Regressor** (tuned parameters include: number of leaves, min child samples, learning rate, trees, subsampling)
+- **XGBoost Regressor** (tuned parameters include: max depth, min child weight, learning rate, trees, subsampling)
+
+### 3. Model Blending (Ensemble)
+A final meta-model is formed using a 50/50 weighted average of LightGBM and XGBoost predictions, yielding superior generalization.
+
+---
+
+## 📈 Performance Comparison
+
+The performance of each model evaluated on the test dataset:
+
+| Model | Mean Absolute Error (MAE) | R² Score |
+| :--- | :---: | :---: |
+| XGBoost | 8.4956 | 91.43% |
+| LightGBM | 7.9652 | 91.93% |
+| **Ensemble (50/50 Blend)** | **7.8004** | **92.26%** |
+
+*The Ensemble model successfully reduces forecasting error to an MAE of 7.80 and explains over 92.26% of target variance.*
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
+Make sure you have Python 3.8+ installed.
 
-- Python 3.10 or newer
-- `pip`
-- Access to the raw retail CSV files expected by `check_data_layer.py`
+### Setup & Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Kritika-Agrahari/internship-project-.git
+   cd internship-project-
+   ```
+2. Initialize and activate a virtual environment:
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate
+   ```
+3. Install the dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Setup
+### Running the Pipeline
+- **Data Layer Validation**: Run the memory-downcasting check script:
+  ```bash
+  python check_data_layer.py
+  ```
+- **Forecasting Notebook**: Open and run the Jupyter notebook for EDA and model training:
+  ```bash
+  jupyter notebook demand-forecasting-with-advanced-feature-engineeri.ipynb
+  ```
 
-```bash
-git clone <repository-url>
-cd ai_mlinternship
-python -m venv .venv
-.venv\Scripts\activate
-pip install pandas numpy
-```
+---
 
-### Run the data-layer check
-
-```bash
-python check_data_layer.py
-```
-
-The script prints whether the sample files were found, shows the ingested shape, and reports the memory reduction from downcasting.
-
-## Current Limitations
-
-- The full application code is still being assembled.
-- The validation script expects raw CSVs to exist on the local machine.
-- The design document is stronger than the implementation at this stage, which is normal for Week 1.
-
-## Related Documentation
+## 📅 Timeline & Reference Documentation
 
 - [Week 1 guide](week_1_guide.md)
 - [Week 1 submission template](docs/week_1_submission_issue.md)
 - [Deliverables specification](03_Deliverables_Specification.md)
 - [3rd year roadmap](docs/roadmap_3rd_year.md)
 
-## License
+## 📄 License
 
 This project is developed for academic and learning purposes.
 
-## Developer
+## 🧑‍💻 Developer
 
-Kritika Agrahari
-
-
+**Kritika Agrahari** (user.email: `kritikaagrahari16@gmail.com`)
