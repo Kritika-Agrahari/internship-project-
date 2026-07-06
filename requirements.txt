@@ -1,0 +1,10 @@
+numpy
+pandas
+scikit-learn
+xgboost
+lightgbm
+category-encoders
+matplotlib
+seaborn
+ipykernel
+holidays
