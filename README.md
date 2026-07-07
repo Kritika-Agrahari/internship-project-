@@ -51,24 +51,31 @@ The dataset contains **76,000 records** and **16 variables**:
 
 ## 🛠️ Feature Engineering Pipeline
 
-The model implements advanced feature extraction to capture consumer behavior, competitor pricing influence, and time-based characteristics:
+The model implements an advanced temporal feature extraction pipeline to capture consumer demand dynamics, pricing incentives, competitor influence, and calendar effects:
 
-1. **Revenue & Supply Metrics**:
-   - `Total_Earnings`: Net earnings after applying discounts:
-     $$\text{Total Earnings} = \text{Units Sold} \times \text{Price} \times \left(1 - \frac{\text{Discount}}{100}\right)$$
-   - `Products_to_sell`: Outstanding customer demand remaining:
-     $$\text{Products to sell} = \text{Units Ordered} - \text{Units Sold}$$
-   - `Inventory_pressure`: Scaled inventory capacity indicator:
-     $$\text{Inventory Pressure} = \frac{\text{Inventory Level}}{\text{Inventory Level} + 1}$$
+1. **Temporal Dynamics (Lags & Rolling Window Statistics)**:
+   - `lag_1`, `lag_7`, `lag_30`: Previous target values capturing demand from 1, 7, and 30 days ago to reflect short-term momentum and weekly/monthly seasonality.
+   - `rolling_mean_7` / `rolling_std_7`: Rolling average and standard deviation of demand over the past 7 days (shifted by 1 day to prevent future data leakage).
+   - `rolling_mean_14` / `rolling_std_14`: Rolling average and standard deviation over the past 14 days (shifted by 1 day).
+   - `rolling_mean_30` / `rolling_std_30`: Rolling average and standard deviation over the past 30 days (shifted by 1 day).
 
-2. **Competitor & Price Dynamics**:
-   - `Price_diff`: Numerical price difference: $\text{Price} - \text{Competitor Pricing}$
-   - `Price_ratio`: Price ratio: $\frac{\text{Price}}{\text{Competitor Pricing} + 10^{-6}}$
-   - `Price_gap_pct`: Percentage gap: $\frac{\text{Price} - \text{Competitor Pricing}}{\text{Competitor Pricing}}$
+2. **Time & Calendar Context**:
+   - `day_of_week`: Day of the week (0 = Monday, 6 = Sunday) to model intra-week variation.
+   - `is_weekend`: Binary flag indicating if the transaction occurred on a weekend.
+   - `is_holiday`: Binary flag mapping Indian public holidays using the `holidays` package.
+   - `trend`: Linear trend feature representing days elapsed since the start of the dataset.
 
-3. **Promotion & Temporal Features**:
-   - `Discount_effect`: Interaction term capturing promotion amplification: $\text{Discount} \times \text{Promotion}$
-   - `Year`, `Month`, `Day`: Extracted from the `Date` timestamp.
+3. **Inventory & Supply Optimization**:
+   - `inventory_demand_ratio`: Scaled ratio of current inventory to rolling 7-day average demand.
+   - `days_of_supply`: Scaled ratio of current inventory to rolling 30-day average demand.
+
+4. **Competitor & Price Dynamics**:
+   - `Price_gap_pct`: Percentage gap relative to competitor pricing:
+     $$\text{Price Gap \%} = \frac{\text{Price} - \text{Competitor Pricing}}{\text{Competitor Pricing}}$$
+   - `Discount_effect`: Interaction term capturing promotion amplification:
+     $$\text{Discount Effect} = \text{Discount} \times \text{Promotion}$$
+   - `Total_Earnings` & `Products_to_sell`: Financial and order backlog metrics computed prior to feature selection.
+   - `Year`, `Month`, `Day`: Extracted calendar fields from the `Date` timestamp.
 
 ---
 
