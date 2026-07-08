@@ -146,6 +146,7 @@ Make sure you have Python 3.8+ installed.
 ## 📅 Timeline & Reference Documentation
 
 - [Week 1 guide](week_1_guide.md)
+- [Week 1 learnings](week_1_learning.md)
 - [Week 1 submission template](docs/week_1_submission_issue.md)
 - [Deliverables specification](03_Deliverables_Specification.md)
 - [3rd year roadmap](docs/roadmap_3rd_year.md)
