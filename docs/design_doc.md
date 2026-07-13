@@ -27,6 +27,7 @@ The system is designed around a large retail transaction dataset. The high-level
    - Generates temporal, cyclical, lag, and rolling window features for demand forecasting.
 5. **Model Serving & UI**:
    - Exposes prediction endpoints via a Flask API.
+   - Concrete request/response shapes are defined in [api_contract.md](api_contract.md).
    - Serves a dashboard to display aggregate forecasts, granular SKU forecasts, and safety stock recommendations.
 
 ---

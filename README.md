@@ -18,6 +18,7 @@ This repository contains the end-to-end Machine Learning pipeline for demand for
 | **[demand-forecasting-with-advanced-feature-engineeri.ipynb](demand-forecasting-with-advanced-feature-engineeri.ipynb)** | Jupyter notebook containing EDA, Feature Engineering, Modeling, Hyperparameter Tuning, and Evaluation. |
 | **[check_data_layer.py](check_data_layer.py)** | Validates sample CSV ingestion and applies memory downcasting checks. |
 | **[requirements.txt](requirements.txt)** | Python package dependencies needed to run the project. |
+| **[docs/api_contract.md](docs/api_contract.md)** | Frontend-facing API contract for forecast, metadata, and health endpoints. |
 | **[docs/design_doc.md](docs/design_doc.md)** | System design doc and technical rationale for forecasting. |
 | **[docs/roadmap_3rd_year.md](docs/roadmap_3rd_year.md)** | Personal extension roadmap for the 3rd year portfolio. |
 | **[03_Deliverables_Specification.md](03_Deliverables_Specification.md)** | Official internship deliverables and submission rules. |
