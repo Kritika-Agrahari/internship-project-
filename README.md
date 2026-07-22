@@ -5,9 +5,9 @@
 [![Status](https://img.shields.io/badge/Status-Modeling%20%26%20Evaluation-orange)]
 [![Academic Year](https://img.shields.io/badge/Year-2025--2026-purple)]
 
-An ML-focused retail forecasting project for Indian apparel stores, built around demand prediction, data validation, and inventory planning for mid-market brands. 
+An ML-focused retail forecasting project for Indian apparel stores, built around demand prediction, data validation, inventory planning, and a deployable forecasting UI.
 
-This repository contains the end-to-end Machine Learning pipeline for demand forecasting, including Exploratory Data Analysis (EDA), advanced feature engineering, target encoding, and hyperparameter-tuned modeling using LightGBM and XGBoost.
+This repository includes the training notebook, the serialized model artifacts, a FastAPI inference service, and a Vite/React frontend for dashboarding and manual prediction flows.
 
 ---
 
@@ -17,6 +17,8 @@ This repository contains the end-to-end Machine Learning pipeline for demand for
 | :--- | :--- |
 | **[demand-forecasting-with-advanced-feature-engineeri.ipynb](demand-forecasting-with-advanced-feature-engineeri.ipynb)** | Jupyter notebook containing EDA, Feature Engineering, Modeling, Hyperparameter Tuning, and Evaluation. |
 | **[check_data_layer.py](check_data_layer.py)** | Validates sample CSV ingestion and applies memory downcasting checks. |
+| **[server.py](server.py)** | FastAPI backend that serves health, metadata, forecast, prediction, and billing endpoints. |
+| **[frontend/](frontend/)** | Vite + React application for the dashboard, demand simulator, and POS billing UI. |
 | **[requirements.txt](requirements.txt)** | Python package dependencies needed to run the project. |
 | **[docs/api_contract.md](docs/api_contract.md)** | Frontend-facing API contract for forecast, metadata, and health endpoints. |
 | **[docs/design_doc.md](docs/design_doc.md)** | System design doc and technical rationale for forecasting. |
@@ -131,6 +133,27 @@ Make sure you have Python 3.8+ installed.
    ```bash
    pip install -r requirements.txt
    ```
+
+### Run the Backend
+From the repository root:
+```bash
+uvicorn server:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### Run the Frontend
+From the `frontend/` folder:
+```bash
+npm install
+npm run dev
+```
+
+The frontend talks to `http://localhost:8000` in development by default. Set `VITE_API_BASE_URL` if the API is hosted elsewhere.
+
+### Hosting Notes
+- Set `PORT` for the API host if your platform assigns one.
+- Set `CORS_ORIGINS` to your deployed frontend origin, for example `https://your-app.vercel.app`.
+- Set `VITE_API_BASE_URL` in the frontend environment when the API is hosted on a different domain.
+- Keep `demand_forecasting.csv` and `demand_forecasting_artifacts.joblib` next to `server.py`, or override them with `DEMAND_CSV_PATH` and `DEMAND_MODEL_PATH`.
 
 ### Running the Pipeline
 - **Data Layer Validation**: Run the memory-downcasting check script:

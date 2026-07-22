@@ -12,3 +12,7 @@ catboost
 shap
 pmdarima
 statsmodels
+fastapi
+uvicorn[standard]
+pydantic
+joblib

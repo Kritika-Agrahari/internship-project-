@@ -10,7 +10,7 @@ The trained model (`lgbm_model` / `xgb_model`) expects a total of **31 features*
 To prevent the form from becoming overly complex and intimidating, the user should **only input raw business variables**. The backend logic must handle the remaining feature engineering dynamically before calling the model:
 - **Time/Date Features** (`Year`, `Month`, `Day`, `day_of_week`, `is_weekend`, `is_holiday`, `trend`): Derived automatically from the selected **Date**.
 - **Historical/Rolling Features** (`lag_*`, `rolling_*`): The backend needs to fetch historical sales data for the given `Store ID` and `Product ID` to calculate these on the fly.
-- **Engineered Business Features** (`Price_gap_pct`, `Discount_effect`, `inventory_demand_ratio`, `days_of_supply`): Calculated by the backend using the raw `Price`, `Discount`, and `Inventory Level`. Note: **Price** must be collected even though it's not directly in the final 31 features, as it's required to calculate `Price_gap_pct`.
+- **Engineered Business Features** (`Price_gap_pct`, `Discount_effect`, `inventory_demand_ratio`, `days_of_supply`): Calculated by the backend using the raw `Price`, `Discount`, and `Inventory Level`. **Price** must still be collected even though it is not directly in the final 31 features, because it is required to calculate `Price_gap_pct`.
 
 ## 2. Form Fields, Types, and Sensible Defaults
 

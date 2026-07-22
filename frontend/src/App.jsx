@@ -25,7 +25,9 @@ import {
   API CONFIGURATION & FALLBACKS
 =========================================================================
 */
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? "http://localhost:8000" : "")
+).replace(/\/$/, "");
 
 const FALLBACK_CATEGORIES = ["Electronics", "Groceries", "Clothing", "Furniture", "Toys"];
 const FALLBACK_REGIONS = ["North", "South", "East", "West"];
@@ -624,7 +626,7 @@ function PredictionSimulator({ metadata, backendOnline }) {
                   </div>
                   
                   <div style={{ marginTop: 24, fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>
-                    <strong>Engine Note:</strong> Computes rolling lags dynamically. A lower price relative to competitor or active promo lifts baseline projection.
+                    Computes rolling lags dynamically. Lower prices relative to competitors and active promotions lift the baseline projection.
                   </div>
                 </div>
               </div>

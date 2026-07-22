@@ -1,26 +1,41 @@
 import os
-import joblib
+from pathlib import Path
+from typing import List, Optional
+
 import holidays
+import joblib
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Optional
 
 app = FastAPI(title="Demand Forecasting API", version="1.0.0")
 
-# Enable CORS for frontend development
+BASE_DIR = Path(__file__).resolve().parent
+CSV_PATH = Path(os.getenv("DEMAND_CSV_PATH", BASE_DIR / "demand_forecasting.csv"))
+MODEL_PATH = Path(os.getenv("DEMAND_MODEL_PATH", BASE_DIR / "demand_forecasting_artifacts.joblib"))
+DEFAULT_CORS_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
+
+
+def parse_cors_origins(raw_value: str | None) -> list[str]:
+    if not raw_value:
+        return [origin.strip() for origin in DEFAULT_CORS_ORIGINS.split(",") if origin.strip()]
+    if raw_value.strip() == "*":
+        return ["*"]
+    return [origin.strip() for origin in raw_value.split(",") if origin.strip()]
+
+
+cors_origins = parse_cors_origins(os.getenv("CORS_ORIGINS"))
+
+# Enable CORS for local development and deployed frontend origins.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "*"],
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-CSV_PATH = "demand_forecasting.csv"
-MODEL_PATH = "demand_forecasting_artifacts.joblib"
 
 # Global state loaded on startup
 df_global = None
@@ -156,6 +171,11 @@ def engineer_features(store_id: str, product_id: str, input_date: pd.Timestamp, 
 def health():
     return {"status": "ok", "service": "demand-forecasting-api", "version": "1.0.0"}
 
+
+@app.get("/")
+def root():
+    return {"status": "ok", "message": "Demand Forecasting API is running"}
+
 @app.get("/api/metadata")
 def get_metadata():
     global df_global
@@ -264,6 +284,17 @@ def predict(req: PredictRequest):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "server:app",
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", "8000")),
+        reload=os.getenv("UVICORN_RELOAD", "false").lower() == "true",
+    )
 
 @app.post("/api/bill")
 def record_bill(req: BillRequest):
