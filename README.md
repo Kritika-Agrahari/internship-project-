@@ -144,6 +144,25 @@ Make sure you have Python 3.8+ installed.
 
 ---
 
+## 🚀 Stretch Goals (Beyond Phase 6: Deploy)
+
+As this project evolves into a production-grade application, the following phases are planned as stretch goals:
+
+### Phase 7 — Data Persistence & Feedback Loop
+- **Prediction Logging & Actuals Ingestion**: Store every prediction and match it back to actual sales data once available (e.g., using PostgreSQL).
+- **Drift Monitoring**: Track rolling MAE/WAPE week over week. Implement simple feature drift detection (Population Stability Index).
+- **Retraining Pipeline**: Establish a retraining script with a promotion gate to ensure models improve dynamically rather than remaining static.
+
+### Phase 8 — Auth
+- **User Accounts**: Implement sign-up/login functionality using managed providers like Clerk, Auth0, or Supabase.
+- **Route Protection**: Protect API routes in FastAPI using auth middleware.
+
+### Phase 9 — Billing & Subscriptions
+- **Stripe Integration**: Introduce subscription tiers (Free/Pro/Enterprise) or usage-based billing.
+- **Access Control**: FastAPI middleware to check plan constraints before serving predictions.
+
+---
+
 ## 📅 Timeline & Reference Documentation
 
 - [Week 1 guide](week_1_guide.md)

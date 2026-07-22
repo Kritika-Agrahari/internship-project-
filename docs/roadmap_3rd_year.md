@@ -35,6 +35,11 @@ By May 2027, this project will evolve from a static web application into a **Pro
 ## 3rd Year Internship Plan (Jun-Jul 2027)
 In the summer of 2027, this project will transition into an **Enterprise Inventory Risk Engine** (e.g. Fintech Churn & Fraud radar or Large-scale Supply Chain optimization). The core data ingestion and gradient boosting pipelines will be expanded to ingest external economic markers, weather APIs, and public holiday feeds to optimize supply chains across thousands of distribution hubs.
 
+### Commercialization & SaaS Expansion (Stretch Phases)
+- **Phase 7 (Feedback Loop)**: Mature the data persistence layer to ingest actuals against predictions and trigger retraining via drift monitoring.
+- **Phase 8 (Auth & Identity)**: Integrate user accounts (Clerk/Auth0/Supabase) and secure API endpoints for multi-tenant access.
+- **Phase 9 (Billing & Subscriptions)**: Implement Stripe for subscription tiers and usage-based metering, fully transforming the project into a monetizable forecasting API.
+
 ---
 
 ## What I'll need from the placement / mentor ecosystem

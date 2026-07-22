@@ -7,7 +7,8 @@ def reduce_mem_usage(df):
     start_mem = df.memory_usage().sum() / 1024**2
     for col in df.columns:
         col_type = df[col].dtype
-        if col_type != object:
+        # Only downcast true numeric columns; skip string/date/object columns.
+        if pd.api.types.is_numeric_dtype(col_type):
             c_min, c_max = df[col].min(), df[col].max()
             if str(col_type)[:3] == 'int':
                 if c_min > np.iinfo(np.int8).min and c_max < np.iinfo(np.int8).max:
@@ -19,7 +20,11 @@ def reduce_mem_usage(df):
             else:
                 df[col] = df[col].astype(np.float32)
     end_mem = df.memory_usage().sum() / 1024**2
-    print(f"  * Memory reduced from {start_mem:.2f} MB to {end_mem:.2f} MB ({100*(start_mem-end_mem)/start_mem:.1f}% reduction)")
+    if start_mem > 0:
+        reduction = 100 * (start_mem - end_mem) / start_mem
+        print(f"  * Memory reduced from {start_mem:.2f} MB to {end_mem:.2f} MB ({reduction:.1f}% reduction)")
+    else:
+        print(f"  * Memory usage: {end_mem:.2f} MB")
     return df
 
 def validate_and_ingest():
