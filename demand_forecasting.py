@@ -45,20 +45,20 @@ df['Date'] = pd.to_datetime(df['Date'])
 # Sort by series and date to compute lags and rolling features correctly
 df = df.sort_values(by=['Store ID', 'Product ID', 'Date']).reset_index(drop=True)
 
-# Lags of Target
-df['lag_1'] = df.groupby(['Store ID', 'Product ID'])['Demand'].shift(1)
-df['lag_7'] = df.groupby(['Store ID', 'Product ID'])['Demand'].shift(7)
-df['lag_30'] = df.groupby(['Store ID', 'Product ID'])['Demand'].shift(30)
+# Lags of Target (shifted by 84 days to prevent leakage in 84-day horizon forecasting)
+df['lag_84'] = df.groupby(['Store ID', 'Product ID'])['Demand'].shift(84)
+df['lag_91'] = df.groupby(['Store ID', 'Product ID'])['Demand'].shift(84 + 7)
+df['lag_114'] = df.groupby(['Store ID', 'Product ID'])['Demand'].shift(84 + 30)
 
-# Rolling window statistics (shift by 1 day first to prevent data leakage)
-df['rolling_mean_7'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(1).rolling(7).mean())
-df['rolling_std_7'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(1).rolling(7).std())
+# Rolling window statistics (shift by 84 days to prevent data leakage over test horizon)
+df['rolling_mean_7'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(84).rolling(7).mean())
+df['rolling_std_7'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(84).rolling(7).std())
 
-df['rolling_mean_14'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(1).rolling(14).mean())
-df['rolling_std_14'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(1).rolling(14).std())
+df['rolling_mean_14'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(84).rolling(14).mean())
+df['rolling_std_14'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(84).rolling(14).std())
 
-df['rolling_mean_30'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(1).rolling(30).mean())
-df['rolling_std_30'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(1).rolling(30).std())
+df['rolling_mean_30'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(84).rolling(30).mean())
+df['rolling_std_30'] = df.groupby(['Store ID', 'Product ID'])['Demand'].transform(lambda x: x.shift(84).rolling(30).std())
 
 # Day of week and weekend features
 df['day_of_week'] = df['Date'].dt.dayofweek
@@ -396,7 +396,11 @@ df_model = df_model.sort_values(['Date', 'Store ID', 'Product ID']).reset_index(
 
 # Cell 22
 # Time-aware split: train -> validation tail -> test tail
-max_date = df_model['Date'].max()
+# Ignore sparse outlier dates (e.g. recent inference rows) when computing max_date
+date_counts = df_model['Date'].value_counts()
+dense_dates = date_counts[date_counts > 10].index
+max_date = dense_dates.max()
+
 test_start_date = max_date - pd.Timedelta(days=84)
 valid_start_date = test_start_date - pd.Timedelta(days=28)
 

@@ -131,17 +131,17 @@ def engineer_features(store_id: str, product_id: str, input_date: pd.Timestamp, 
     temp_df = temp_df.sort_values("Date").reset_index(drop=True)
     
     # Calculate Lag features
-    temp_df["lag_1"] = temp_df["Demand"].shift(1)
-    temp_df["lag_7"] = temp_df["Demand"].shift(7)
-    temp_df["lag_30"] = temp_df["Demand"].shift(30)
+    temp_df["lag_84"] = temp_df["Demand"].shift(84)
+    temp_df["lag_91"] = temp_df["Demand"].shift(84 + 7)
+    temp_df["lag_114"] = temp_df["Demand"].shift(84 + 30)
     
     # Calculate Rolling Window stats (shift first to prevent leakage)
-    temp_df["rolling_mean_7"] = temp_df["Demand"].shift(1).rolling(7).mean()
-    temp_df["rolling_std_7"] = temp_df["Demand"].shift(1).rolling(7).std()
-    temp_df["rolling_mean_14"] = temp_df["Demand"].shift(1).rolling(14).mean()
-    temp_df["rolling_std_14"] = temp_df["Demand"].shift(1).rolling(14).std()
-    temp_df["rolling_mean_30"] = temp_df["Demand"].shift(1).rolling(30).mean()
-    temp_df["rolling_std_30"] = temp_df["Demand"].shift(1).rolling(30).std()
+    temp_df["rolling_mean_7"] = temp_df["Demand"].shift(84).rolling(7).mean()
+    temp_df["rolling_std_7"] = temp_df["Demand"].shift(84).rolling(7).std()
+    temp_df["rolling_mean_14"] = temp_df["Demand"].shift(84).rolling(14).mean()
+    temp_df["rolling_std_14"] = temp_df["Demand"].shift(84).rolling(14).std()
+    temp_df["rolling_mean_30"] = temp_df["Demand"].shift(84).rolling(30).mean()
+    temp_df["rolling_std_30"] = temp_df["Demand"].shift(84).rolling(30).std()
     
     # Time-based features
     temp_df["day_of_week"] = temp_df["Date"].dt.dayofweek
